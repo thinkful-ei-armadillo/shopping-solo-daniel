@@ -11,8 +11,7 @@ const STORE = {
   searchPhrase: ''
 };
 
-// reference these by using STORE.items[itemIndex.name]
-
+// html template for adding items to the list
 function generateItemElement(item, itemIndex) {
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
