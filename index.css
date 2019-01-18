@@ -49,3 +49,14 @@ button:hover {
 .shopping-item__checked {
   text-decoration: line-through;
 }
+
+.search-container {
+  width: 300px;
+  margin-top: 10px;
+}
+
+.checkbox {
+  height: 20px;
+  width: 20px;
+  margin-left: 10px;
+}

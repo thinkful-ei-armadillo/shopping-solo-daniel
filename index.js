@@ -3,13 +3,15 @@
 /* global $ */
 
 const STORE = {
-  items: [{name: 'apples'},
-    {name: 'oranges'},
-    {name: 'milk'},
-    {name: 'bread'}],
-  hideCompleted: false
+  items: [{name: 'apples', checked: false},
+    {name: 'oranges', checked: false},
+    {name: 'milk', checked: true},
+    {name: 'bread', checked: false}],
+  hideCompleted: false,
+  searchPhrase: ''
 };
 
+// reference these by using STORE.items[itemIndex.name]
 
 function generateItemElement(item, itemIndex, template) {
   return `
@@ -26,7 +28,7 @@ function generateItemElement(item, itemIndex, template) {
     </li>`;
 }
 
-
+// making the shopping item input into a array of strings so we can use it in other functions
 function generateShoppingItemsString(shoppingList) {
   console.log('Generating shopping list element');
 
@@ -35,22 +37,41 @@ function generateShoppingItemsString(shoppingList) {
   return items.join('');
 }
 
-
+// rendering function for the entire list of shopping items, will be called in each new task function
 function renderShoppingList() {
   // render the shopping list in the DOM
   console.log('`renderShoppingList` ran');
-  const shoppingListItemsString = generateShoppingItemsString(STORE);
+
+  // const shoppingListItemsString = generateShoppingItemsString(STORE);
+
+  const { items, showNotChecked, searchPhrase } = STORE;
+  
+  let shoppingListItemsString;
+
+  if (showNotChecked) {
+    console.log('if statement for showNotChecked ran');
+    const notChecked = items.filter(item => !(item.checked));
+    shoppingListItemsString = generateShoppingItemsString(notChecked);
+  }
+  else if (searchPhrase) {
+    const search = items.filter(item => item.name.includes(searchPhrase));
+    shoppingListItemsString = generateShoppingItemsString(search);
+  }
+  else {
+    shoppingListItemsString = generateShoppingItemsString(items);
+  }
 
   // insert that HTML into the DOM
   $('.js-shopping-list').html(shoppingListItemsString);
 }
 
-
+// handling the submission of new item strings by storing it in the STORE object
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.push({name: itemName, checked: false});
+  const { items } = STORE;
+  items.push({name: itemName, checked: false});
 }
-
+// handling the submission of new items upon input submission
 function handleNewItemSubmit() {
   $('#js-shopping-list-form').submit(function(event) {
     event.preventDefault();
@@ -61,20 +82,26 @@ function handleNewItemSubmit() {
     renderShoppingList();
   });
 }
-
+// handling the toggle for the checked property of each item object inside the items array of STORE
 function toggleCheckedForListItem(itemIndex) {
   console.log('Toggling checked property for item at index ' + itemIndex);
-  STORE[itemIndex].checked = !STORE[itemIndex].checked;
+  const { items } = STORE;
+  items[itemIndex].checked = !items[itemIndex].checked;
 }
 
+function deleteItemFromList(itemIndex) {
+  const { items } = STORE;
+  items.splice(itemIndex, 1);
+}
 
+// retrieving the item index so it can be used in other tasks
 function getItemIndexFromElement(item) {
   const itemIndexString = $(item)
     .closest('.js-item-index-element')
     .attr('data-item-index');
   return parseInt(itemIndexString, 10);
 }
-
+// handling the toggle for the check button in the item list
 function handleItemCheckClicked() {
   $('.js-shopping-list').on('click', '.js-item-toggle', event => {
     console.log('`handleItemCheckClicked` ran');
@@ -90,7 +117,8 @@ function handleDeleteItemClicked() {
   // item
   // listen to "DELETE" button click
   let shoppingItem = '';
-  $('.shopping-list').on('click', '.shopping-item-delete', (event) => {
+  $('.js-shopping-list').on('click', '.shopping-item-delete', (event) => {
+    console.log('handleDeleteItemClicked ran');
     shoppingItem = $(event.currentTarget).parents('.shopping-item-controls').siblings('.shopping-item'); 
   
     // traverse to the shopping item class to get the index in STORE
@@ -99,10 +127,27 @@ function handleDeleteItemClicked() {
     STORE.splice(itemIndex, 1);
     // send render function
     renderShoppingList();
-    console.log('handleDelete ran');
   });
-  console.log('`handleDeleteItemClicked` ran');
 }
+// handling the input for the checkbox to show only incomplete items in the list
+function handleChecked() {
+  $('js-checkbox').change( function () {
+    STORE.showNotChecked = !STORE.showNotChecked;
+    renderShoppingList();
+  });
+}
+
+function handleSearchString(phrase) {
+  return STORE.searchPhrase = phrase;
+}
+
+function handleSearch() {
+  $('.js-search').keyup( function () {
+    handleSearchString($('.js-search').val());
+    renderShoppingList();
+  });
+}
+
 
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
@@ -113,6 +158,9 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleChecked();
+  handleSearch();
+
 }
 
 // when the page loads, call `handleShoppingList`

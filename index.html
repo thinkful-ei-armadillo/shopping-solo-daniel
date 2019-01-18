@@ -15,7 +15,12 @@
             <label for="shopping-list-entry">Add an item</label>
             <input type="text" name="shopping-list-entry" class="js-shopping-list-entry" placeholder="e.g., broccoli">
             <button type="submit">Add item</button>
+            <label for="checkbox">Check to see only incomplete</label>
+            <input type="checkbox" for="check this box to see only incomplete items" name="check-to-show-uncompleted" class="js-checkbox checkbox" />
         </form>
+        <div class="search-container">
+          <input type="text" name="search-shopping-list" value="Search" class="js-search" placeholder="search" />
+        </div>
         <ul class="shopping-list js-shopping-list">
         </ul>
     </div>
