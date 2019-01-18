@@ -13,7 +13,7 @@ const STORE = {
 
 // reference these by using STORE.items[itemIndex.name]
 
-function generateItemElement(item, itemIndex, template) {
+function generateItemElement(item, itemIndex) {
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
       <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
@@ -88,11 +88,6 @@ function toggleCheckedForListItem(itemIndex) {
   items[itemIndex].checked = !items[itemIndex].checked;
 }
 
-function deleteItemFromList(itemIndex) {
-  const { items } = STORE;
-  items.splice(itemIndex, 1);
-}
-
 // retrieving the item index so it can be used in other tasks
 function getItemIndexFromElement(item) {
   const itemIndexString = $(item)
@@ -109,7 +104,11 @@ function handleItemCheckClicked() {
     renderShoppingList();
   });
 }
-
+// calling items key from STORE object so we can delete it
+function deleteListItem(itemIndex) {
+  const { items } = STORE;
+  items.splice(itemIndex, 1);
+}
 
 function handleDeleteItemClicked() {
   // this function will be responsible for when users want to delete a shopping list
@@ -120,26 +119,27 @@ function handleDeleteItemClicked() {
     console.log('handleDeleteItemClicked ran');
     shoppingItem = $(event.currentTarget).parents('.shopping-item-controls').siblings('.shopping-item'); 
   
-    // traverse to the shopping item class to get the index in STORE
-    let itemIndex = getItemIndexFromElement(shoppingItem); //eventually combine line event listener and this line traversal
-    // use index to remove associated checked property in STORE
-    STORE.splice(itemIndex, 1);
+    const itemIndex = getItemIndexFromElement(shoppingItem); 
+    // use index to remove associated checked property in STORE object
+    deleteListItem(itemIndex);
     // send render function
     renderShoppingList();
   });
 }
 // handling the input for the checkbox to show only incomplete items in the list
 function handleChecked() {
-  $('js-checkbox').change( function () {
+  $('.js-checkbox').change( function () {
     STORE.hideCompleted = !STORE.hideCompleted;
+    // STORE.hideCompleted = true;
     renderShoppingList();
   });
 }
-
+// handling the user search input so it can be used in handleSearch to re-render shopping list for
+// search results
 function handleSearchString(phrase) {
   return STORE.searchPhrase = phrase;
 }
-
+// handling the search functionality from inputted string drawn from handleSearchString
 function handleSearch() {
   $('.js-search').keyup( function () {
     handleSearchString($('.js-search').val());
