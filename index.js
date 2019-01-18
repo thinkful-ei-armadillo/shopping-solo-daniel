@@ -39,30 +39,29 @@ function generateShoppingItemsString(shoppingList) {
 
 // rendering function for the entire list of shopping items, will be called in each new task function
 function renderShoppingList() {
-  // render the shopping list in the DOM
   console.log('`renderShoppingList` ran');
 
-  // const shoppingListItemsString = generateShoppingItemsString(STORE);
+  // render the shopping list in the DOM
 
-  const { items, showNotChecked, searchPhrase } = STORE;
+  const { items, hideCompleted, searchPhrase } = STORE;
   
-  let shoppingListItemsString;
+  let shoppingListString;
 
-  if (showNotChecked) {
-    console.log('if statement for showNotChecked ran');
-    const notChecked = items.filter(item => !(item.checked));
-    shoppingListItemsString = generateShoppingItemsString(notChecked);
+  if (hideCompleted) {
+    console.log('if statement for hideCompleted evaluated true');
+    const notChecked = items.filter(item => (item.checked === false));
+    shoppingListString = generateShoppingItemsString(notChecked);
   }
   else if (searchPhrase) {
     const search = items.filter(item => item.name.includes(searchPhrase));
-    shoppingListItemsString = generateShoppingItemsString(search);
+    shoppingListString = generateShoppingItemsString(search);
   }
   else {
-    shoppingListItemsString = generateShoppingItemsString(items);
+    shoppingListString = generateShoppingItemsString(items);
   }
 
   // insert that HTML into the DOM
-  $('.js-shopping-list').html(shoppingListItemsString);
+  $('.js-shopping-list').html(shoppingListString);
 }
 
 // handling the submission of new item strings by storing it in the STORE object
@@ -132,7 +131,7 @@ function handleDeleteItemClicked() {
 // handling the input for the checkbox to show only incomplete items in the list
 function handleChecked() {
   $('js-checkbox').change( function () {
-    STORE.showNotChecked = !STORE.showNotChecked;
+    STORE.hideCompleted = !STORE.hideCompleted;
     renderShoppingList();
   });
 }
