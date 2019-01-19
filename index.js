@@ -15,7 +15,7 @@ const STORE = {
 function generateItemElement(item, itemIndex) {
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
+      <input type="text" value ="${item.name} " class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}" readonly/>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -146,6 +146,24 @@ function handleSearch() {
   });
 }
 
+// handling the text editing for the title of each item
+function handleTextEdit() {
+
+  $('.js-shopping-item').on( 'select', function () {
+    $(this).removeAttr('readonly');
+    $(this).on('keypress', function(e) {
+      if ( e === 13 ) {
+        const newText = $('input:text').val();
+        const { items } = STORE;
+        const sameIndex = getItemIndexFromElement(this);
+        items[sameIndex].name = newText;
+        $('.js-shopping-item').attr('readonly', true);
+      }
+    });
+  });
+}
+
+
 
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
@@ -158,7 +176,7 @@ function handleShoppingList() {
   handleDeleteItemClicked();
   handleChecked();
   handleSearch();
-
+  handleTextEdit();
 }
 
 // when the page loads, call `handleShoppingList`

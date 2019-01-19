@@ -61,3 +61,8 @@ button:hover {
   margin-left: 5px;
   margin-top:10px;
 }
+
+input[type=text] :read-only {
+  outline: white;
+  border: white;
+}
