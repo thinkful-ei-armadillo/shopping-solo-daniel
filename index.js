@@ -149,13 +149,18 @@ function handleSearch() {
 // handling the text editing for the title of each item
 function handleTextEdit() {
 
-  $('.js-shopping-item').on( 'select', function () {
+  $('.js-shopping-item').on( 'select', function (event) {
+
+    console.log('selected text works');
     $(this).removeAttr('readonly');
     $(this).on('keypress', function(e) {
-      if ( e === 13 ) {
+      console.log('keypress listener working');
+      if ( e.which === 13 ) {
         const newText = $('input:text').val();
+        $('input:text').attr(`value="${newText}"`);
+        console.log(newText);
         const { items } = STORE;
-        const sameIndex = getItemIndexFromElement(this);
+        const sameIndex = getItemIndexFromElement(event.currentTarget);
         items[sameIndex].name = newText;
         $('.js-shopping-item').attr('readonly', true);
       }
